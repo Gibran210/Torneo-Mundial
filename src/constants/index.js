@@ -5,6 +5,9 @@ export const SHEET_URL = import.meta.env.VITE_SHEET_URL || ''
 
 export const SHEET_READY = !!SHEET_URL && !SHEET_URL.includes('PEGA_TU')
 
+console.log('SHEET_URL:', SHEET_URL)
+console.log('SHEET_READY:', SHEET_READY)
+
 // ── Datos estáticos ────────────────────────────────
 export const FLAGS = [
   'br','ar','fr','de','es','pt','be','nl',
