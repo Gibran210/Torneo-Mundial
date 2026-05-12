@@ -1,95 +1,34 @@
-import { useState, useEffect, useCallback } from 'react'
-import { SHEET_URL, SHEET_READY } from '../constants'
+const sendToSheet = useCallback((name, email, pos) => {
+  return new Promise((resolve, reject) => {
+    if (!SHEET_READY) { resolve(); return }
 
-/**
- * Hook que gestiona toda la integración con Google Sheets:
- *  - Carga automática al montar
- *  - Caché local de jugadores
- *  - Validación de correo duplicado
- *  - Guardar nuevo jugador
- *  - Refrescar manualmente
- */
-export function useSheets() {
-  const [players,     setPlayers]     = useState([])
-  const [loadStatus,  setLoadStatus]  = useState('idle')   // 'idle' | 'loading' | 'ok' | 'error'
-  const [saveStatus,  setSaveStatus]  = useState('idle')   // 'idle' | 'saving' | 'ok' | 'error'
+    const cb    = `__gs_post_${Date.now()}`
+    const timer = setTimeout(() => {
+      delete window[cb]
+      reject(new Error('Timeout'))
+    }, 12000)
 
-  // ── Fetch desde Google Sheets (JSONP → Promise) ─────────
-  const fetchFromSheet = useCallback(() => {
-    return new Promise(resolve => {
-      if (!SHEET_READY) { resolve([]); return }
+    window[cb] = data => {
+      clearTimeout(timer)
+      delete window[cb]
+      if (data?.success)                       resolve(data)
+      else if (data?.error === 'EMAIL_DUPLICADO') reject(new Error('EMAIL_DUPLICADO'))
+      else                                      reject(new Error(data?.error || 'Error'))
+    }
 
-      const cb    = `__gs_${Date.now()}`
-      const timer = setTimeout(() => {
-        if (window[cb]) { delete window[cb]; resolve([]) }
-      }, 12000)
-
-      window[cb] = data => {
-        clearTimeout(timer)
-        delete window[cb]
-        resolve(data?.success && Array.isArray(data.players) ? data.players : [])
-      }
-
-      const s    = document.createElement('script')
-      s.src      = `${SHEET_URL}?callback=${cb}&t=${Date.now()}`
-      s.onerror  = () => { clearTimeout(timer); delete window[cb]; resolve([]) }
-      document.head.appendChild(s)
-      setTimeout(() => s.remove?.(), 16000)
+    const params = new URLSearchParams({
+      name,
+      email,
+      pos1:     pos[0] || '',
+      pos2:     pos[1] || '',
+      method:   'POST',
+      callback: cb,
     })
-  }, [])
 
-  // ── Carga automática al montar ────────────────────────────
-  const load = useCallback(async () => {
-    setLoadStatus('loading')
-    try {
-      const list = await fetchFromSheet()
-      setPlayers(list)
-      setLoadStatus('ok')
-    } catch {
-      setLoadStatus('error')
-    }
-  }, [fetchFromSheet])
-
-  useEffect(() => { load() }, [load])
-
-  // ── Validar correo duplicado ──────────────────────────────
-  const isEmailTaken = useCallback(
-    email => players.some(p => p.email?.toLowerCase() === email.toLowerCase()),
-    [players]
-  )
-
-  // ── Guardar nuevo jugador ─────────────────────────────────
-  const savePlayer = useCallback(async ({ name, email, pos }) => {
-    setSaveStatus('saving')
-    try {
-      if (SHEET_READY) {
-        const params = new URLSearchParams({ name, email, pos1: pos[0] ?? '', pos2: pos[1] ?? '' })
-        await fetch(SHEET_URL, { method: 'POST', mode: 'no-cors', body: params })
-      }
-      const player = {
-        name,
-        email,
-        pos,
-        number: players.length + 1,
-        fecha:  new Date().toLocaleString('es-MX'),
-      }
-      setPlayers(prev => [...prev, player])
-      setSaveStatus('ok')
-      return player
-    } catch {
-      setSaveStatus('error')
-      throw new Error('No se pudo guardar')
-    } finally {
-      setTimeout(() => setSaveStatus('idle'), 2000)
-    }
-  }, [players])
-
-  return {
-    players,
-    loadStatus,
-    saveStatus,
-    isEmailTaken,
-    savePlayer,
-    refresh: load,
-  }
-}
+    const s   = document.createElement('script')
+    s.src     = `${SHEET_URL}?${params.toString()}`
+    s.onerror = () => { clearTimeout(timer); delete window[cb]; reject(new Error('Script error')) }
+    document.head.appendChild(s)
+    setTimeout(() => s.remove?.(), 15000)
+  })
+}, [])

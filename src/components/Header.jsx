@@ -9,12 +9,6 @@ export default function Header({ playerCount, onOpenPanel }) {
           TORNEO <span>SICAR</span> 2026
         </div>
       </div>
-
-      <button className="panel-btn" onClick={onOpenPanel}>
-        <div className="btn-dot" />
-        Ver inscritos
-        <span className="cnt-badge">{playerCount}</span>
-      </button>
     </header>
   )
 }
