@@ -1,10 +1,9 @@
 // ══════════════════════════════════════════════════
 //  ⚙️  CONFIGURACIÓN — Pega tu URL de Apps Script
 // ══════════════════════════════════════════════════
-export const SHEET_URL = 'PEGA_TU_URL_AQUI'
+export const SHEET_URL = import.meta.env.VITE_SHEET_URL || ''
 
-export const SHEET_READY =
-  SHEET_URL && !SHEET_URL.includes('PEGA_TU')
+export const SHEET_READY = !!SHEET_URL && !SHEET_URL.includes('PEGA_TU')
 
 // ── Datos estáticos ────────────────────────────────
 export const FLAGS = [
