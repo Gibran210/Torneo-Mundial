@@ -4,7 +4,7 @@ import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 export default function Hero() {
   return (
     <div className="hero">
-      <div className="hero-eyebrow">⚽ SICAR · Torneo Oficial · 2026</div>
+      <div className="hero-eyebrow">⚽ SICAR · Edición Mundialista</div>
       <h1 className="hero-title">
         Inscripción
         <em>de Jugadores</em>

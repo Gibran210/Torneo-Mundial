@@ -66,7 +66,6 @@ export function useSheets() {
   // ── Guardar jugador vía JSONP ────────────────────────────
   const savePlayer = useCallback(async ({ name, email, depto, pos }) => {
     setSaveStatus('saving')
-    console.log('savePlayer llamado con:', { name, email, depto, pos })
     try {
       if (SHEET_READY) {
         const params = new URLSearchParams({

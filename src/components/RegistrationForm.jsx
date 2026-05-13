@@ -57,7 +57,6 @@ export default function RegistrationForm({ players, loadStatus, saveStatus, isEm
   // ── Submit ───────────────────────────────────────────────
   const handleSubmit = async () => {
     const errs = validate()
-    console.log('Errores:', errs)
     if (errs.pos) setPosErr(errs.pos)
     setErrors(errs)
     if (Object.keys(errs).length > 0) return
@@ -72,7 +71,6 @@ export default function RegistrationForm({ players, loadStatus, saveStatus, isEm
       setName(''); setEmail(''); setDepto(''); setPositions([]); setErrors({}); setPosErr('')
       onSuccess(player)
     } catch (err) {
-      console.log('Error al guardar:', err.message)
       if (err?.message === 'EMAIL_DUPLICADO') {
         setErrors(e => ({ ...e, email: '¡Este correo ya está registrado!' }))
         document.getElementById('ff-email')?.classList.add('err-state')
