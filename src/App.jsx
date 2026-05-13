@@ -20,7 +20,7 @@ export default function App() {
 
   const handleSuccess = () => {
     setConfettiKey(k => k + 1)
-    showToast(SHEET_READY ? '¡Guardado en Google Sheets! ✓' : '¡Jugador inscrito al torneo!')
+    showToast(SHEET_READY ? '¡Jugador inscrito al torneo! ✓' : '¡Jugador inscrito al torneo!')
   }
 
   return (
