@@ -53,7 +53,6 @@ export default function App() {
             onSuccess={handleSuccess}
           />
         </main>
-        <div className="spacer" />
       </div>
 
       {/* ── PANEL LATERAL ── */}

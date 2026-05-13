@@ -9,6 +9,15 @@ export default function Header({ playerCount, onOpenPanel }) {
           TORNEO <span>SICAR</span> 2026
         </div>
       </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', height: '100%'}}>
+        {/* Logo imagen */}
+        <img
+          src="/logo/logo.png"
+          alt="Logo"
+          style={{ height: '120%', width: 'auto', objectFit: 'contain' }}
+        />
+      </div>
     </header>
   )
 }

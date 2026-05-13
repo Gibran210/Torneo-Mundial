@@ -1,4 +1,5 @@
 import React from 'react'
+import { Player } from '@lottiefiles/react-lottie-player'
 
 export default function Hero() {
   return (
@@ -10,12 +11,13 @@ export default function Hero() {
       </h1>
       <p className="hero-sub">Regístrate · Compite · Sé leyenda</p>
 
-      {/* Wrapper que fuerza el centrado sin importar el padre */}
-      <div style={{ width: '60%', textAlign: 'center', marginTop: '28px' }}>
-        <img
-          src="/logo/logo.png"
-          alt="Logo del torneo"
-          className="hero-logo"
+      {/* Animación Lottie */}
+      <div style={{ width: '100%', textAlign: 'center', marginTop: '16px' }}>
+        <Player
+          autoplay
+          loop
+          src="/logo/players.json"
+          style={{ width: '280px', height: '280px' }}
         />
       </div>
 

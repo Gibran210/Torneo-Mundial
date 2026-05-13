@@ -31,6 +31,7 @@ body {
   left: 0;
   right: 0;
   z-index: 20;
+  height: 10%;
 }
 
 /* Empuja el contenido para no quedar tapado.
@@ -103,13 +104,14 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 15px 24px;
+  height: 100%;
   background: rgba(0,0,0,.3);
   border-bottom: 1px solid rgba(255,255,255,.1);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
 
-.logo { display: flex; align-items: center; gap: 10px; }
+.logo { display: flex; align-items: center; gap: 10px; height: 100%;}
 .logo-ball {
   width: 34px; height: 34px;
   background: linear-gradient(135deg, #00c853, #00a550);
@@ -726,9 +728,49 @@ body {
   .principal {
     flex-direction: column;
     align-items: center;
-    padding: 28px 16px;
-    gap: 28px;
+    padding: 24px 16px;
+    gap: 24px;
   }
-  .hero, .card-wrap { width: 100%; max-width: 520px; }
-  .hero { text-align: center; }
+
+  .hero {
+    width: 100%;
+    max-width: 520px;
+    text-align: center;        /* centra el texto */
+    align-items: center;       /* centra los hijos flex */
+    padding: 10px 0;
+  }
+
+  .hero-eyebrow {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-sub {
+    text-align: center;
+  }
+
+  /* Centra el logo debajo del título en móvil */
+  .hero > div[style] {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .card-wrap {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  /* Cancha + chips: apila verticalmente en pantallas muy pequeñas */
+  @media (max-width: 480px) {
+    .pos-layout {
+      grid-template-columns: 1fr;
+      justify-items: center;
+    }
+
+    .pitch-svg {
+      width: 200px;
+      height: 275px;
+    }
+  }
 }
