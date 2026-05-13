@@ -57,6 +57,7 @@ export default function RegistrationForm({ players, loadStatus, saveStatus, isEm
   // ── Submit ───────────────────────────────────────────────
   const handleSubmit = async () => {
     const errs = validate()
+    console.log('Errores:', errs)
     if (errs.pos) setPosErr(errs.pos)
     setErrors(errs)
     if (Object.keys(errs).length > 0) return
