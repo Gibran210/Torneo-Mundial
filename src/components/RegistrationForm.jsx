@@ -65,12 +65,13 @@ export default function RegistrationForm({ players, loadStatus, saveStatus, isEm
         email: email.trim(),
         pos: positions.map(id => ZONES[id].label),
       })
-
-      // Reset form
       setName(''); setEmail(''); setPositions([]); setErrors({}); setPosErr('')
       onSuccess(player)
-    } catch {
-      // error handled by hook
+    } catch (err) {
+      if (err?.message === 'EMAIL_DUPLICADO') {
+        setErrors(e => ({ ...e, email: '¡Este correo ya está registrado!' }))
+        document.getElementById('ff-email')?.classList.add('err-state')
+      }
     }
   }
 
