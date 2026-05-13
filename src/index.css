@@ -749,6 +749,11 @@ body {
     text-align: center;
   }
 
+  .hero-lottie {
+    height: 50% !important;
+    width: 100% !important;
+  }
+
   /* Centra el logo debajo del título en móvil */
   .hero > div[style] {
     margin-left: auto;

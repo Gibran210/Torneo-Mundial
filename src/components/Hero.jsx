@@ -17,6 +17,7 @@ export default function Hero() {
   src="/logo/players.json"
   autoplay
   loop
+  className="hero-lottie"
   style={{ width: '280px', height: '280px' }}
 />
       </div>
