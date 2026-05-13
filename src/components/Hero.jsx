@@ -1,5 +1,5 @@
 import React from 'react'
-import { Player } from '@lottiefiles/react-lottie-player'
+import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 
 export default function Hero() {
   return (
@@ -13,12 +13,12 @@ export default function Hero() {
 
       {/* Animación Lottie */}
       <div style={{ width: '100%', textAlign: 'center', marginTop: '16px' }}>
-        <Player
-          autoplay
-          loop
-          src="/logo/players.json"
-          style={{ width: '280px', height: '280px' }}
-        />
+       <DotLottieReact
+  src="/logo/players.json"
+  autoplay
+  loop
+  style={{ width: '280px', height: '280px' }}
+/>
       </div>
 
       <div className="hero-deco-circle hero-deco-circle--lg" />
