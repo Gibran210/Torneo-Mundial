@@ -16,6 +16,7 @@ const CornerSVG = ({ color1, color2 }) => (
 export default function RegistrationForm({ players, loadStatus, saveStatus, isEmailTaken, savePlayer, onSuccess }) {
   const [name,       setName]       = useState('')
   const [email,      setEmail]      = useState('')
+  const [depto, setDepto] = useState('')
   const [positions,  setPositions]  = useState([])
   const [errors,     setErrors]     = useState({})
   const [posErr,     setPosErr]     = useState('')
@@ -48,6 +49,7 @@ export default function RegistrationForm({ players, loadStatus, saveStatus, isEm
     } else if (isEmailTaken(email)) {
       errs.email = '¡Este correo ya está registrado!'
     }
+    if (!depto) errs.depto = 'Selecciona un departamento'
     if (positions.length !== 2) errs.pos = 'Selecciona exactamente 2 posiciones'
     return errs
   }
@@ -63,9 +65,10 @@ export default function RegistrationForm({ players, loadStatus, saveStatus, isEm
       const player = await savePlayer({
         name: name.trim(),
         email: email.trim(),
+        depto,
         pos: positions.map(id => ZONES[id].label),
       })
-      setName(''); setEmail(''); setPositions([]); setErrors({}); setPosErr('')
+      setName(''); setEmail(''); setDepto(''); setPositions([]); setErrors({}); setPosErr('')
       onSuccess(player)
     } catch (err) {
       if (err?.message === 'EMAIL_DUPLICADO') {
@@ -138,6 +141,39 @@ export default function RegistrationForm({ players, loadStatus, saveStatus, isEm
               </svg>
             }
           />
+
+          {/* Departamento */}
+<div className="f-group">
+  <div className={`f-field${errors.depto ? ' err-state' : ''}`}>
+    <div className="f-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+      </svg>
+    </div>
+    <div className="f-label-wrap">
+      <label className={`f-label${depto ? ' up' : ''}`}>Departamento</label>
+      <select
+        className="f-inp f-select"
+        value={depto}
+        onChange={e => { setDepto(e.target.value); setErrors(er => ({ ...er, depto: '' })) }}
+      >
+        <option value="" disabled hidden></option>
+        <option value="Desarrollo">Desarrollo</option>
+        <option value="Soporte">Soporte</option>
+        <option value="Ventas">Ventas</option>
+        <option value="Logística">Logística</option>
+      </select>
+    </div>
+  </div>
+  {errors.depto && (
+    <div className="f-err">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2.5" strokeLinecap="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      {errors.depto}
+    </div>
+  )}
+</div>
 
           {/* Position divider */}
           <div className="divider">

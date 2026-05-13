@@ -705,6 +705,30 @@ body {
 .p-num { font-family:'Bebas Neue',sans-serif;font-size:28px;color:#ccd8f5;flex-shrink:0; }
 .p-date { font-size:10px;color:#b5c5e8;margin-top:3px; }
 
+.f-select {
+  position: absolute;
+  bottom: 5px;
+  left: 12px;
+  right: 10px;
+  width: calc(100% - 22px);
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #001b6e;
+  padding: 0;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.f-select option {
+  background: #fff;
+  color: #001b6e;
+  font-weight: 600;
+}
 /* ════════════════════════════════════════════
    CONFETTI
 ════════════════════════════════════════════ */

@@ -72,6 +72,7 @@ export function useSheets() {
           method: 'POST',
           name,
           email,
+          depto: depto || '',
           pos1: pos[0] || '',
           pos2: pos[1] || '',
         })
@@ -87,6 +88,7 @@ export function useSheets() {
       const player = {
         name,
         email,
+        depto,
         pos,
         number: playersRef.current.length + 1,
         fecha:  new Date().toLocaleString('es-MX'),
