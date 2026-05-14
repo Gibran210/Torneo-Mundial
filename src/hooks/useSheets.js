@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { SHEET_URL, SHEET_READY } from '../constants'
 
+const API = '/api/sheets'
+
 // ── JSONP helper genérico ────────────────────────────────────
 function jsonp(url, timeout = 12000) {
   return new Promise((resolve, reject) => {
@@ -38,13 +40,11 @@ export function useSheets() {
 
   // ── Cargar jugadores ─────────────────────────────────────
   const load = useCallback(async () => {
-    if (!SHEET_READY) {
-      setLoadStatus('ok')
-      return
-    }
+    if (!SHEET_READY) { setLoadStatus('ok'); return }
     setLoadStatus('loading')
     try {
-      const data = await jsonp(`${SHEET_URL}?t=${Date.now()}`)
+      const res  = await fetch(`${API}?t=${Date.now()}`)
+      const data = await res.json()
       if (data?.success && Array.isArray(data.players)) {
         setPlayers(data.players)
       }
@@ -56,14 +56,12 @@ export function useSheets() {
 
   useEffect(() => { load() }, [load])
 
-  // ── Validar email duplicado ──────────────────────────────
   const isEmailTaken = useCallback((email) => {
     return playersRef.current.some(
       p => (p.email || '').toLowerCase() === email.toLowerCase()
     )
   }, [])
 
-  // ── Guardar jugador vía JSONP ────────────────────────────
   const savePlayer = useCallback(async ({ name, email, depto, pos }) => {
     setSaveStatus('saving')
     try {
@@ -73,23 +71,19 @@ export function useSheets() {
           name,
           email,
           depto: depto || '',
-          pos1: pos[0] || '',
-          pos2: pos[1] || '',
+          pos1:  pos[0] || '',
+          pos2:  pos[1] || '',
         })
-        const data = await jsonp(`${SHEET_URL}?${params.toString()}`)
+        const res  = await fetch(`${API}?${params.toString()}`)
+        const data = await res.json()
         if (!data?.success) {
-          if (data?.error === 'EMAIL_DUPLICADO') {
-            throw new Error('EMAIL_DUPLICADO')
-          }
+          if (data?.error === 'EMAIL_DUPLICADO') throw new Error('EMAIL_DUPLICADO')
           throw new Error(data?.error || 'Error al guardar')
         }
       }
 
       const player = {
-        name,
-        email,
-        depto,
-        pos,
+        name, email, depto, pos,
         number: playersRef.current.length + 1,
         fecha:  new Date().toLocaleString('es-MX'),
       }
@@ -97,7 +91,6 @@ export function useSheets() {
       setSaveStatus('ok')
       setTimeout(() => setSaveStatus('idle'), 2000)
       return player
-
     } catch (err) {
       setSaveStatus('error')
       setTimeout(() => setSaveStatus('idle'), 2000)
@@ -105,12 +98,5 @@ export function useSheets() {
     }
   }, [])
 
-  return {
-    players,
-    loadStatus,
-    saveStatus,
-    isEmailTaken,
-    savePlayer,
-    refresh: load,
-  }
+  return { players, loadStatus, saveStatus, isEmailTaken, savePlayer, refresh: load }
 }
