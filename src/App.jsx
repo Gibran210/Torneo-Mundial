@@ -9,7 +9,8 @@ import Toast             from './components/Toast'
 import { useToast }      from './components/Toast'
 import Confetti          from './components/Confetti'
 import { useSheets }     from './hooks/useSheets'
-import { SHEET_READY }   from './constants'
+import RegistrationClosed from './components/RegistrationClosed'
+import { SHEET_READY, REGISTRATION_OPEN }   from './constants'
 
 export default function App() {
   const { players, loadStatus, saveStatus, isEmailTaken, savePlayer, refresh } = useSheets()
@@ -43,16 +44,20 @@ export default function App() {
             de .sticky-top para que nada quede tapado ──────── */}
       <div className="page-content">
         <main className="principal">
-          <Hero />
-          <RegistrationForm
-            players={players}
-            loadStatus={loadStatus}
-            saveStatus={saveStatus}
-            isEmailTaken={isEmailTaken}
-            savePlayer={savePlayer}
-            onSuccess={handleSuccess}
-          />
-        </main>
+  <Hero />
+  {!REGISTRATION_OPEN ? (
+    <RegistrationClosed total={players.length} max={players.length} />
+  ) : (
+    <RegistrationForm
+      players={players}
+      loadStatus={loadStatus}
+      saveStatus={saveStatus}
+      isEmailTaken={isEmailTaken}
+      savePlayer={savePlayer}
+      onSuccess={handleSuccess}
+    />
+  )}
+</main>
       </div>
 
       {/* ── PANEL LATERAL ── */}

@@ -4,6 +4,7 @@
 export const SHEET_URL = import.meta.env.VITE_SHEET_URL || ''
 
 export const SHEET_READY = !!SHEET_URL && !SHEET_URL.includes('PEGA_TU')
+export const REGISTRATION_OPEN = true 
 
 // ── Datos estáticos ────────────────────────────────
 export const FLAGS = [
