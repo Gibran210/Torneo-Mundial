@@ -949,3 +949,274 @@ body {
 
 
 }
+
+/* ════════════════════════════════════════════
+   TEAMS SECTION
+════════════════════════════════════════════ */
+.teams-section {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1200px;
+  text-align: center;
+  padding: 40px 30px 0;
+  animation: heroIn .7s ease both;
+}
+
+.teams-eyebrow {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: rgba(255,255,255,.5);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.teams-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(28px, 4vw, 42px);
+  letter-spacing: 2px;
+  color: #fff;
+  margin-bottom: 6px;
+  text-shadow: 0 0 30px rgba(0,200,83,.25);
+}
+
+.teams-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,.45);
+  margin-bottom: 28px;
+}
+
+/* Grid de banderas */
+.teams-grid {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.teams-flag-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  padding: 24px 20px 18px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(255,255,255,.1);
+  background: rgba(255,255,255,.07);
+  transition: transform .2s cubic-bezier(.34,1.56,.64,1), border-color .2s, background .2s;
+  position: relative;
+  animation: cardIn .5s ease both;
+  min-width: 120px;
+}
+
+.teams-flag-btn:hover {
+  transform: translateY(-6px) scale(1.06);
+  border-color: rgba(255,255,255,.35);
+  background: rgba(255,255,255,.14);
+}
+
+.teams-flag-btn:active { transform: scale(.97); }
+
+.teams-pulse {
+  position: absolute;
+  top: 9px; right: 9px;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #00e676;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.teams-flag-emoji {
+  font-size: 64px;
+  line-height: 1;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,.3));
+  transition: transform .2s;
+}
+.teams-flag-btn:hover .teams-flag-emoji { transform: scale(1.15) rotate(-3deg); }
+
+.teams-flag-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255,255,255,.8);
+  letter-spacing: .5px;
+}
+
+.teams-flag-count {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 99px;
+  background: rgba(0,200,83,.2);
+  color: #00e676;
+  border: 1px solid rgba(0,200,83,.3);
+  font-family: 'Rajdhani', sans-serif;
+}
+
+/* Overlay */
+.teams-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 15, 60, .35);   /* ← mucho más transparente */
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);          /* ← menos blur */
+  animation: fadeIn .2s ease;
+}
+
+/* Modal */
+.teams-modal {
+  background: #fff;
+  border-radius: 18px;
+  width: min(400px, 92%);
+  overflow: hidden;
+  position: relative;
+  animation: modalIn .35s cubic-bezier(.34,1.56,.64,1);
+  box-shadow: 0 24px 60px rgba(0,0,0,.4);
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(.88) translateY(20px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.teams-modal-hero {
+  padding: 18px 18px 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.teams-modal-hero-pattern {
+  position: absolute; inset: 0;
+  opacity: .08;
+  background: repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%);
+  background-size: 14px 14px;
+  pointer-events: none;
+}
+
+.teams-modal-flag {
+  font-size: 42px;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+  animation: flagWave .8s ease-in-out infinite alternate;
+}
+@keyframes flagWave {
+  from { transform: rotate(-4deg); }
+  to   { transform: rotate(4deg); }
+}
+
+.teams-modal-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px;
+  letter-spacing: 1px;
+  color: #fff;
+  position: relative;
+  z-index: 1;
+}
+
+.teams-modal-sub {
+  font-size: 12px;
+  color: rgba(255,255,255,.7);
+  margin-top: 2px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  position: relative;
+  z-index: 1;
+}
+
+.teams-modal-close {
+  margin-left: auto;
+  background: rgba(255,255,255,.15);
+  border: none;
+  border-radius: 8px;
+  padding: 7px 11px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'Nunito', sans-serif;
+  color: #fff;
+  transition: background .15s;
+  position: relative;
+  z-index: 1;
+}
+.teams-modal-close:hover { background: rgba(255,255,255,.28); }
+
+.teams-modal-bar {
+  height: 4px;
+  background-size: 200% 100%;
+  animation: accentFlow 2s linear infinite;
+}
+
+.teams-modal-body {
+  padding: 12px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.teams-player-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 11px;
+  background: #f4f7ff;
+  border: 1px solid #e8eeff;
+  animation: pIn .3s ease both;
+}
+
+.teams-p-num  { font-size: 12px; color: #9db5de; min-width: 18px; text-align: right; font-weight: 700; }
+.teams-p-av   { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 14px; flex-shrink: 0; }
+.teams-p-info { flex: 1; min-width: 0; }
+.teams-p-name { font-size: 13px; font-weight: 700; color: #001b6e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.teams-p-meta { font-size: 11px; color: #7b9cda; margin-top: 1px; }
+.teams-p-pos  { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px; white-space: nowrap; flex-shrink: 0; font-family: 'Rajdhani', sans-serif; letter-spacing: .5px; }
+
+.teams-empty  { text-align: center; padding: 2rem; color: #9db5de; font-size: 13px; font-weight: 600; }
+
+/* Confetti */
+.teams-confetti {
+  position: absolute;
+  top: 0;
+  pointer-events: none;
+  animation: cfFall linear forwards;
+}
+
+/* Responsive */
+@media (max-width: 860px) {
+  .teams-section { padding: 28px 16px 0; }
+  .teams-flag-btn { min-width: 70px; padding: 12px 8px 10px; }
+  .teams-flag-emoji { font-size: 44px; }
+}
+
+.teams-jersey-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 0 8px;
+  background: var(--color-background-secondary, #f8f9fc);
+  border-bottom: 0.5px solid #eef2ff;
+}
+
+.teams-jersey-svg {
+  width: 90px;
+  height: auto;
+  animation: jerseyFloat 2.5s ease-in-out infinite;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,.18));
+}
+
+@keyframes jerseyFloat {
+  0%,100% { transform: translateY(0) rotate(-1deg); }
+  50%     { transform: translateY(-8px) rotate(1deg); }
+}
