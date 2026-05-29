@@ -135,7 +135,6 @@ export default function Teams() {
   return (
     <section className="teams-section">
       <div className="teams-eyebrow">⚽ Equipos Participantes</div>
-      <h2 className="teams-title">Torneo SICAR 2026</h2>
       <p className="teams-sub">Haz clic en una bandera para ver los integrantes</p>
 
       {/* Grid de banderas */}
