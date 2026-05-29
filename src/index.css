@@ -900,6 +900,17 @@ body {
     gap: 24px;
   }
 
+  .teams-overlay {
+    padding: 16px;   /* ← respiro en los bordes */
+    align-items: center;
+  }
+
+  .teams-modal {
+    width: 100%;     /* ← ocupa todo el ancho disponible */
+    max-width: 100%;
+    margin: 0;
+  }
+
   .hero {
     width: 100%;
     max-width: 520px;
