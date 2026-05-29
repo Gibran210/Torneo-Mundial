@@ -1198,6 +1198,16 @@ body {
   .teams-section { padding: 28px 16px 0; }
   .teams-flag-btn { min-width: 70px; padding: 12px 8px 10px; }
   .teams-flag-emoji { font-size: 44px; }
+  .teams-overlay {
+    padding: 16px;   /* ← respiro en los bordes */
+    align-items: center;
+  }
+
+  .teams-modal {
+    width: 100%;     /* ← ocupa todo el ancho disponible */
+    max-width: 100%;
+    margin: 0;
+  }
 }
 
 .teams-jersey-wrap {
