@@ -173,11 +173,19 @@ export default function Teams() {
       <div className="teams-modal-hero" style={{ background: team.heroBg }}>
         <div className="teams-modal-hero-pattern" />
         <img
-          src={`/flags/${team.id.replace('-160','')}.png`}
-          alt={team.name}
-          style={{ width:48, height:'auto', borderRadius:4, position:'relative', zIndex:1, flexShrink:0 }}
-          onError={e => { e.target.style.display='none' }}
-        />
+  src={`/flags/${team.id}.png`}
+  alt={team.name}
+  style={{
+    width: 48,
+    height: 'auto',
+    borderRadius: 4,
+    position: 'relative',
+    zIndex: 1,
+    flexShrink: 0,
+    animation: 'flagWave .8s ease-in-out infinite alternate',  // ← agrega esto
+  }}
+  onError={e => { e.target.style.display = 'none' }}
+/>
         <div style={{ flex:1, position:'relative', zIndex:1 }}>
           <div className="teams-modal-title" style={{ color: heroTextColor }}>{team.name}</div>
           <div className="teams-modal-sub" style={{ color: heroSubColor }}>
