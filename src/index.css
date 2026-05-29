@@ -1178,7 +1178,7 @@ body {
 
 .teams-player-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;  /* ← antes center, ahora alinea arriba */
   gap: 10px;
   padding: 9px 12px;
   border-radius: 11px;
@@ -1190,9 +1190,28 @@ body {
 .teams-p-num  { font-size: 12px; color: #9db5de; min-width: 18px; text-align: right; font-weight: 700; }
 .teams-p-av   { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 14px; flex-shrink: 0; }
 .teams-p-info { flex: 1; min-width: 0; }
-.teams-p-name { font-size: 13px; font-weight: 700; color: #001b6e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.teams-p-meta { font-size: 11px; color: #7b9cda; margin-top: 1px; }
-.teams-p-pos  { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px; white-space: nowrap; flex-shrink: 0; font-family: 'Rajdhani', sans-serif; letter-spacing: .5px; }
+.teams-p-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #001b6e;
+  white-space: normal;      /* ← antes nowrap, ahora permite saltos */
+  overflow: visible;        /* ← antes hidden */
+  text-overflow: unset;     /* ← quita el "..." */
+  line-height: 1.3;
+  word-break: break-word;
+}.teams-p-meta { font-size: 11px; color: #7b9cda; margin-top: 1px; }
+.teams-p-pos {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 99px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: .5px;
+  align-self: flex-start;   /* ← se queda arriba cuando el nombre es largo */
+  margin-top: 2px;
+}
 
 .teams-empty  { text-align: center; padding: 2rem; color: #9db5de; font-size: 13px; font-weight: 600; }
 

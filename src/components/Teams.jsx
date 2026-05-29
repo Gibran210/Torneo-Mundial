@@ -14,12 +14,60 @@ const TEAMS = [
 
 // ── Jugadores por equipo — reemplaza con datos reales ───────
 const PLAYERS = {
-  'mx-160': [],
-  'br-160': [],
-  'es-160': [],
-  'gb-160': [],
-  'de-160': [],
-  'fr-160': [],
+  'br-160': [
+    { name:'Julio César Lepe Rodríguez',    depto:'Desarrollo', pos:['Portero','Medio / Delantero'] },
+    { name:'Juan Camacho',                  depto:'Desarrollo', pos:['Defensa','Medio / Delantero'] },
+    { name:'José Genaro Tapia Rios',        depto:'Desarrollo', pos:['Defensa','Medio / Delantero'] },
+    { name:'Yoezer Hernandez Covarrubias',  depto:'Soporte',    pos:['Defensa','Medio / Delantero'] },
+    { name:'Fernando Hernandez Rubio',      depto:'Desarrollo', pos:['Medio / Delantero','Defensa'] },
+    { name:'Alejandro Covarrubias',         depto:'Desarrollo', pos:['Medio / Delantero','Defensa'] },
+    { name:'Daniel Morales',                depto:'Ventas',     pos:['Medio / Delantero','Defensa'] },
+  ],
+  'fr-160': [
+    { name:'Rubén Martínez Gutiérrez',      depto:'Soporte',    pos:['Medio / Delantero','Portero'] },
+    { name:'Jair Solis',                    depto:'Soporte',    pos:['Medio / Delantero','Defensa'] },
+    { name:'Isaac Ramirez Lopez',           depto:'Soporte',    pos:['Defensa','Medio / Delantero'] },
+    { name:'Alberto Gibrán Vázquez García', depto:'Desarrollo', pos:['Defensa','Medio / Delantero'] },
+    { name:'Juan Diego Guzmán Prudencio',   depto:'Desarrollo', pos:['Defensa','Medio / Delantero'] },
+    { name:'Sergio Garcia Padilla',         depto:'Ventas',     pos:['Medio / Delantero','Defensa'] },
+    { name:'Marshall González',             depto:'Desarrollo', pos:['Medio / Delantero','Defensa'] },
+  ],
+  'es-160': [
+    { name:'Manuel Rojas Machuca',              depto:'Desarrollo', pos:['Portero','Defensa'] },
+    { name:'Miguel Camacho',                    depto:'Desarrollo', pos:['Medio / Delantero','Defensa'] },
+    { name:'Jose Ricardo Rodriguez Galindo',    depto:'Ventas',     pos:['Defensa','Medio / Delantero'] },
+    { name:'Julio Cesar Cisneros Maria',        depto:'Desarrollo', pos:['Defensa','Medio / Delantero'] },
+    { name:'Alonso Saldaña',                    depto:'Soporte',    pos:['Defensa','Medio / Delantero'] },
+    { name:'Carlos Durán',                      depto:'Desarrollo', pos:['Medio / Delantero','Defensa'] },
+    { name:'Jesus Alonso Perez Guerra',         depto:'Desarrollo', pos:['Medio / Delantero','Defensa'] },
+  ],
+  'gb-160': [
+    { name:'David Israel Ramírez Jiménez',      depto:'Desarrollo', pos:['Portero','Defensa'] },
+    { name:'Nereo Uriel Aranda Peregrina',      depto:'Desarrollo', pos:['Medio / Delantero','Defensa'] },
+    { name:'Joaquín Alexis Joya Aguilar',       depto:'Desarrollo', pos:['Defensa','Medio / Delantero'] },
+    { name:'Jorge',                             depto:'Logística',  pos:['Defensa','Medio / Delantero'] },
+    { name:'Álvaro Medina Santana',             depto:'Soporte',    pos:['Medio / Delantero','Defensa'] },
+    { name:'Juan Pablo García González',        depto:'Soporte',    pos:['Medio / Delantero','Defensa'] },
+    { name:'Luis Guillermo Colmenares Corona',  depto:'Desarrollo', pos:['Defensa','Medio / Delantero'] },
+  ],
+  'mx-160': [
+    { name:'Fabrizzio Carbonell',               depto:'Desarrollo', pos:['Portero','Medio / Delantero'] },
+    { name:'Héctor Sánchez',                    depto:'Desarrollo', pos:['Medio / Delantero','Defensa'] },
+    { name:'Happy',                             depto:'Desarrollo', pos:['Defensa','Medio / Delantero'] },
+    { name:'Hugo Naim Flores Quiñonez',         depto:'Soporte',    pos:['Defensa','Medio / Delantero'] },
+    { name:'Isai Emmanuel Rivera Avalos',       depto:'Soporte',    pos:['Medio / Delantero','Defensa'] },
+    { name:'Ramon G.',                          depto:'Soporte',    pos:['Medio / Delantero','Defensa'] },
+    { name:'Marco A. Loera Monterroza',         depto:'Desarrollo', pos:['Medio / Delantero','Portero'] },
+  ],
+  'de-160': [
+    { name:'Oscar Lopez Sanchez',               depto:'Desarrollo', pos:['Medio / Delantero','Portero'] },
+    { name:'Martin',                            depto:'Logística',  pos:['Medio / Delantero','Defensa'] },
+    { name:'Giovani Preciado',                  depto:'Desarrollo', pos:['Medio / Delantero','Defensa'] },
+    { name:'Nahúm Vargas',                      depto:'Soporte',    pos:['Defensa','Medio / Delantero'] },
+    { name:'Victor Manuel Hernandez Pelayo',    depto:'Soporte',    pos:['Medio / Delantero','Defensa'] },
+    { name:'Victor Hugo Montaño Cruz',          depto:'Soporte',    pos:['Medio / Delantero','Defensa'] },
+    { name:'Saul Garcia Gonzalez',              depto:'Desarrollo', pos:['Medio / Delantero','Portero'] },
+  ],
 }
 
 const CONF_COLORS = ['#0057e7','#00c853','#f0c14b','#ffffff','#e53935']
