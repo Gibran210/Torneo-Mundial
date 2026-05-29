@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { createPortal } from 'react-dom'
+
 
 // ── Datos de equipos ────────────────────────────────────────
 const TEAMS = [
@@ -163,87 +165,59 @@ export default function Teams() {
       </div>
 
       {/* Modal */}
-      {active && team && (
-        <div
-          className="teams-overlay"
-          onClick={e => e.target === e.currentTarget && closeModal()}
-        >
-          <div className="teams-modal">
-            {showConf && <Confetti />}
+      {active && team && createPortal(
+  <div className="teams-overlay" onClick={e => e.target === e.currentTarget && closeModal()}>
+    <div className="teams-modal">
+      {showConf && <Confetti />}
 
-            {/* Hero */}
-            <div
-              className="teams-modal-hero"
-              style={{ background: team.heroBg }}
-            >
-              <div className="teams-modal-hero-pattern" />
-
-              <img
-                src={`/flags/${team.id}.png`}
-                alt={team.name}
-                style={{ width: 48, height: 'auto', borderRadius: 4, position:'relative', zIndex:1, flexShrink:0 }}
-                onError={e => { e.target.style.display='none' }}
-              />
-
-              <div style={{ flex:1, position:'relative', zIndex:1 }}>
-                <div className="teams-modal-title" style={{ color: heroTextColor }}>
-                  {team.name}
-                </div>
-                <div className="teams-modal-sub" style={{ color: heroSubColor }}>
-                  {players.length} jugador{players.length !== 1 ? 'es' : ''} · Torneo SICAR 2026
-                </div>
-              </div>
-
-              <button
-                className="teams-modal-close"
-                onClick={closeModal}
-                style={{ color: closeBtnColor, background: closeBtnBg }}
-              >
-                ✕ cerrar
-              </button>
-            </div>
-
-            {/* Barra animada */}
-            <div className="teams-modal-bar" style={{ background: team.bar }} />
-
-            {/* Jersey */}
-            <Jersey teamId={active} />
-
-            {/* Lista jugadores */}
-            <div className="teams-modal-body">
-              {players.length === 0 ? (
-                <div className="teams-empty">Sin jugadores asignados aún</div>
-              ) : (
-                players.map((p, i) => (
-                  <div
-                    key={i}
-                    className="teams-player-row"
-                    style={{ animationDelay: `${i * 0.07}s` }}
-                  >
-                    <span className="teams-p-num">{i + 1}</span>
-                    <div
-                      className="teams-p-av"
-                      style={{ background: team.light, color: team.text }}
-                    >
-                      {initials(p.name)}
-                    </div>
-                    <div className="teams-p-info">
-                      <div className="teams-p-name">{p.name}</div>
-                      <div className="teams-p-meta">{p.depto}</div>
-                    </div>
-                    <span
-                      className="teams-p-pos"
-                      style={{ background: team.light, color: team.text }}
-                    >
-                      {(p.pos || []).join(' · ')}
-                    </span>
-                  </div>
-                ))
-              )}
-            </div>
+      <div className="teams-modal-hero" style={{ background: team.heroBg }}>
+        <div className="teams-modal-hero-pattern" />
+        <img
+          src={`/flags/${team.id.replace('-160','')}.png`}
+          alt={team.name}
+          style={{ width:48, height:'auto', borderRadius:4, position:'relative', zIndex:1, flexShrink:0 }}
+          onError={e => { e.target.style.display='none' }}
+        />
+        <div style={{ flex:1, position:'relative', zIndex:1 }}>
+          <div className="teams-modal-title" style={{ color: heroTextColor }}>{team.name}</div>
+          <div className="teams-modal-sub" style={{ color: heroSubColor }}>
+            {players.length} jugador{players.length !== 1 ? 'es' : ''} · Torneo SICAR 2026
           </div>
         </div>
-      )}
+        <button className="teams-modal-close" onClick={closeModal}
+          style={{ color: closeBtnColor, background: closeBtnBg }}>
+          ✕ cerrar
+        </button>
+      </div>
+
+      <div className="teams-modal-bar" style={{ background: team.bar }} />
+      <Jersey teamId={active} />
+
+      <div className="teams-modal-body">
+        {players.length === 0 ? (
+          <div className="teams-empty">Sin jugadores asignados aún</div>
+        ) : (
+          players.map((p, i) => (
+            <div key={i} className="teams-player-row" style={{ animationDelay:`${i*0.07}s` }}>
+              <span className="teams-p-num">{i + 1}</span>
+              <div className="teams-p-av" style={{ background:team.light, color:team.text }}>
+                {initials(p.name)}
+              </div>
+              <div className="teams-p-info">
+                <div className="teams-p-name">{p.name}</div>
+                <div className="teams-p-meta">{p.depto}</div>
+              </div>
+              <span className="teams-p-pos" style={{ background:team.light, color:team.text }}>
+                {(p.pos||[]).join(' · ')}
+              </span>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  </div>,
+  document.body   // ← se renderiza directo en el body, fuera de cualquier contenedor
+)}
     </section>
   )
 }
