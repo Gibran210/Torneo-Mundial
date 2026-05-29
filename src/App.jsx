@@ -44,29 +44,29 @@ export default function App() {
       <div className="page-content">
         <Routes>
 
-          {/* / — Formulario de inscripción */}
-          <Route path="/" element={
-            <main className="principal">
-              <Hero />
-              {!REGISTRATION_OPEN ? (
-                <RegistrationClosed total={players.length} max={players.length} />
-              ) : (
-                <RegistrationForm
-                  players={players}
-                  loadStatus={loadStatus}
-                  saveStatus={saveStatus}
-                  isEmailTaken={isEmailTaken}
-                  savePlayer={savePlayer}
-                  onSuccess={handleSuccess}
-                />
-              )}
-            </main>
-          } />
+  {/* / — Equipos (página principal) */}
+  <Route path="/" element={<Teams />} />
 
-          {/* /equipos — Banderas y equipos */}
-          <Route path="/equipos" element={<Teams />} />
+  {/* /inscripcion — Formulario */}
+  <Route path="/inscripcion" element={
+    <main className="principal">
+      <Hero />
+      {!REGISTRATION_OPEN ? (
+        <RegistrationClosed total={players.length} max={players.length} />
+      ) : (
+        <RegistrationForm
+          players={players}
+          loadStatus={loadStatus}
+          saveStatus={saveStatus}
+          isEmailTaken={isEmailTaken}
+          savePlayer={savePlayer}
+          onSuccess={handleSuccess}
+        />
+      )}
+    </main>
+  } />
 
-        </Routes>
+</Routes>
       </div>
 
       <PlayersPanel

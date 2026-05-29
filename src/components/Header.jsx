@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 export default function Header({ playerCount, onOpenPanel }) {
   const navigate = useNavigate()
   const location = useLocation()
-  const isTeams  = location.pathname === '/equipos'
+const isTeams = location.pathname === '/'
 
   return (
     <header className="header">
@@ -13,16 +13,8 @@ export default function Header({ playerCount, onOpenPanel }) {
       </div>
 
       <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-        {/* Botón para alternar entre páginas */}
-        <button
-          className="panel-btn"
-          onClick={() => navigate(isTeams ? '/' : '/equipos')}
-        >
-          {isTeams ? '📋 Inscripción' : '🏟️ Equipos'}
-        </button>
-
         <img src="/logo/logo.png" alt="Logo"
-          style={{ height:36, width:'auto', objectFit:'contain' }} />
+          style={{ height:50, width:'auto', objectFit:'contain' }} />
       </div>
     </header>
   )
