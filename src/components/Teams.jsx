@@ -182,7 +182,9 @@ export default function Teams() {
     position: 'relative',
     zIndex: 1,
     flexShrink: 0,
-    animation: 'flagWave .8s ease-in-out infinite alternate',  // ← agrega esto
+    animation: 'flagWave .8s ease-in-out infinite alternate',
+    border: '2px solid rgba(0,0,0,.4)',
+    boxShadow: '0 3px 10px rgba(0,0,0,.35)',
   }}
   onError={e => { e.target.style.display = 'none' }}
 />
