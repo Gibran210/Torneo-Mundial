@@ -366,17 +366,22 @@ const saveAll = async () => {
   if (!SHEET_READY) { setSaveStatus('ok'); setHasChanges(false); return }
   setSaving(true)
   setSaveStatus('')
+
+  const delay = ms => new Promise(res => setTimeout(res, ms))
+
   try {
-    // Guardar slots uno por uno
+    // Guardar solo los slots que tienen nombre asignado
     for (const [slot, val] of Object.entries(slots)) {
+      if (!val.nombre && !val.bandera) continue // ← salta slots vacíos
       const params = new URLSearchParams({
         method:'torneo', action:'updateSlot',
         slot, nombre: val.nombre||'', bandera: val.bandera||''
       })
       await jsonp(`${SHEET_URL}?${params}`)
+      await delay(400) // ← pausa entre peticiones
     }
 
-    // Guardar partidos uno por uno
+    // Guardar partidos
     for (const [id, m] of Object.entries(partidos)) {
       const params = new URLSearchParams({
         method:'torneo', action:'updatePartido', id,
@@ -387,6 +392,7 @@ const saveAll = async () => {
         status:         m.status         || 'pending',
       })
       await jsonp(`${SHEET_URL}?${params}`)
+      await delay(400) // ← pausa entre peticiones
     }
 
     setSaveStatus('ok')
@@ -395,6 +401,7 @@ const saveAll = async () => {
     console.error('Error al guardar:', err)
     setSaveStatus('error')
   }
+
   setSaving(false)
   setTimeout(() => setSaveStatus(''), 3000)
 }
