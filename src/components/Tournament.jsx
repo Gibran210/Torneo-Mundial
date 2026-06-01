@@ -1,19 +1,17 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { SHEET_URL, SHEET_READY } from '../constants'
 
-const ADMIN_PASSWORD = 'sicar2026' // ← cambia esto
+const ADMIN_PASSWORD = 'sicar2026'
 
-// ── Equipos disponibles ──────────────────────────────────────
 const AVAILABLE_TEAMS = [
   { id:'mx', nombre:'México',     bandera:'mx' },
   { id:'br', nombre:'Brasil',     bandera:'br' },
   { id:'es', nombre:'España',     bandera:'es' },
-  { id:'gb', nombre:'Inglaterra', bandera:'gb-160' },
+  { id:'gb', nombre:'Inglaterra', bandera:'gb' },
   { id:'de', nombre:'Alemania',   bandera:'de' },
   { id:'fr', nombre:'Francia',    bandera:'fr' },
 ]
 
-// ── Estructura de partidos ───────────────────────────────────
 const MATCH_DEFS = {
   GA1: { label:'Grupo A · P1', local:'A1', visitante:'A2', group:'A' },
   GA2: { label:'Grupo A · P2', local:'A1', visitante:'A3', group:'A' },
@@ -37,7 +35,6 @@ const DEFAULT_PARTIDOS = Object.fromEntries(
   }])
 )
 
-// ── Flag image component ─────────────────────────────────────
 function FlagImg({ code, size = 24 }) {
   if (!code) return <span style={{ fontSize: size * 0.8, lineHeight: 1 }}>🏳️</span>
   const id = code.replace('-160', '').toLowerCase()
@@ -51,7 +48,6 @@ function FlagImg({ code, size = 24 }) {
   )
 }
 
-// ── JSONP helper ─────────────────────────────────────────────
 function jsonp(url) {
   return new Promise((resolve, reject) => {
     const cb    = `__t_${Date.now()}_${Math.random().toString(36).slice(2)}`
@@ -65,7 +61,6 @@ function jsonp(url) {
   })
 }
 
-// ── Calcular puntos ──────────────────────────────────────────
 function calcPoints(slots, partidos) {
   const pts = { A1:0, A2:0, A3:0, B1:0, B2:0, B3:0 }
   const gf  = { A1:0, A2:0, A3:0, B1:0, B2:0, B3:0 }
@@ -98,7 +93,6 @@ function calcPoints(slots, partidos) {
   return { pts, gf, gc, groupA: sortGroup(['A1','A2','A3']), groupB: sortGroup(['B1','B2','B3']) }
 }
 
-// ── Resolver ganador de semi ─────────────────────────────────
 function semiWinner(semiId, partidos) {
   const m = partidos[semiId]
   if (!m || m.status !== 'done') return null
@@ -106,6 +100,266 @@ function semiWinner(semiId, partidos) {
   const ls = parseInt(m.localScore)||0, vs = parseInt(m.visitanteScore)||0
   if (m.penales) return m.penalesGanador === d.local ? d.local : d.visitante
   return ls >= vs ? d.local : d.visitante
+}
+
+function PhaseLabel({ children }) {
+  return (
+    <div className="trn-phase-label">
+      {children}
+      <div className="trn-phase-line" />
+    </div>
+  )
+}
+
+function GroupCard({ group, slots, teamSlots, standings, editMode, onSaveSlot }) {
+  const sorted   = group === 'A' ? standings.groupA : standings.groupB
+  const assigned = Object.values(teamSlots).map(s => s.nombre).filter(Boolean)
+
+  return (
+    <div className="trn-group-card">
+      <div className="trn-group-head">
+        <div className="trn-group-badge"
+          style={{ background: group==='A' ? '#0057e7' : '#00a550' }}>
+          {group}
+        </div>
+        <div className="trn-group-name">Grupo {group}</div>
+        <div className="trn-group-headers"><span>PTS</span></div>
+      </div>
+      <div className="trn-group-body">
+        {slots.map((slot, i) => {
+          const current = teamSlots[slot]
+          const pts     = standings.pts[slot] || 0
+          const pos     = sorted.indexOf(slot)
+
+          return (
+            <div key={slot}
+              className={`trn-slot${pos===0?' first':pos===1?' second':''}`}>
+              <span className="trn-slot-pos">{i+1}</span>
+
+              {editMode ? (
+                <div className="trn-slot-selector">
+                  {current?.nombre && (
+                    <button className="trn-clear-btn"
+                      onClick={() => onSaveSlot(slot,'','')} title="Quitar">✕</button>
+                  )}
+                  <div className="trn-team-options">
+                    {AVAILABLE_TEAMS.map(t => {
+                      const isSelected = current?.nombre === t.nombre
+                      const isTaken    = assigned.includes(t.nombre) && !isSelected
+                      return (
+                        <button
+                          key={t.id}
+                          className={`trn-team-opt${isSelected?' selected':''}${isTaken?' taken':''}`}
+                          onClick={() => !isTaken && onSaveSlot(slot, t.nombre, t.bandera)}
+                          disabled={isTaken}
+                          title={isTaken ? 'Ya asignado' : t.nombre}
+                        >
+                          <FlagImg code={t.bandera} size={20} />
+                        </button>
+                      )
+                    })}
+                  </div>
+                  <span className="trn-slot-selected-name">
+                    {current?.nombre || <span style={{color:'rgba(255,255,255,.25)'}}>Sin asignar</span>}
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <span className="trn-slot-flag">
+                    <FlagImg code={current?.bandera} size={22} />
+                  </span>
+                  <span className="trn-slot-name">{current?.nombre || slot}</span>
+                </>
+              )}
+
+              <div className="trn-slot-stats"><span>{pts}</span></div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function MatchCard({ id, match, def, localName, visitanteName, localFlag, visitanteFlag, editMode, onSave }) {
+  const m = match || {}
+
+  const handleScore = (field, val) => {
+    const updated = { ...m, [field]: val }
+    const status  = (updated.localScore !== '' && updated.visitanteScore !== '') ? 'done' : 'pending'
+    onSave(id, { ...updated, status })
+  }
+
+  const statusMap = {
+    pending: { txt:'Por jugar',    cls:'trn-status-pending' },
+    live:    { txt:'⬤ EN VIVO',    cls:'trn-status-live'    },
+    done:    { txt:'✓ Finalizado', cls:'trn-status-done'    },
+  }
+  const sl = statusMap[m.status || 'pending']
+
+  return (
+    <div className="trn-match-card">
+      <div className="trn-match-label">{def.label}</div>
+      <div className="trn-match-row">
+        <div className="trn-match-team">
+          <FlagImg code={localFlag} size={22} />
+          <span className="trn-match-name">{localName}</span>
+        </div>
+        <div className="trn-match-score">
+          {editMode
+            ? <input className="trn-score-input" value={m.localScore||''} onChange={e=>handleScore('localScore',e.target.value)} maxLength={2} placeholder="-"/>
+            : <div className="trn-score-box">{m.localScore||'-'}</div>
+          }
+          <span className="trn-score-dash">:</span>
+          {editMode
+            ? <input className="trn-score-input" value={m.visitanteScore||''} onChange={e=>handleScore('visitanteScore',e.target.value)} maxLength={2} placeholder="-"/>
+            : <div className="trn-score-box">{m.visitanteScore||'-'}</div>
+          }
+        </div>
+        <div className="trn-match-team right">
+          <span className="trn-match-name">{visitanteName}</span>
+          <FlagImg code={visitanteFlag} size={22} />
+        </div>
+      </div>
+
+      {editMode && (
+        <div className="trn-penales-row">
+          <label className="trn-penales-label">
+            <input type="checkbox" checked={!!m.penales}
+              onChange={e => onSave(id,{...m,penales:e.target.checked,penalesGanador:''})}/>
+            Penales
+          </label>
+          {m.penales && (
+            <div className="trn-penales-winner">
+              <span>Ganador:</span>
+              <button
+                className={`trn-pw-team-btn${m.penalesGanador===def.local?' active':''}`}
+                onClick={() => onSave(id,{...m,penalesGanador:def.local})}>
+                {localName}
+              </button>
+              <button
+                className={`trn-pw-team-btn${m.penalesGanador===def.visitante?' active':''}`}
+                onClick={() => onSave(id,{...m,penalesGanador:def.visitante})}>
+                {visitanteName}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {!editMode && m.penales && m.penalesGanador && (
+        <div className="trn-penales-badge">
+          🥅 Penales — gana {m.penalesGanador===def.local ? localName : visitanteName}
+        </div>
+      )}
+
+      {editMode && (
+        <div className="trn-status-row">
+          {['pending','live','done'].map(s => (
+            <button
+              key={s}
+              className={`trn-status-btn${m.status===s?' active':''}`}
+              onClick={() => onSave(id,{...m,status:s})}
+            >
+              {s==='pending'?'Por jugar':s==='live'?'En vivo':'Finalizado'}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className={`trn-match-status ${sl.cls}`}>{sl.txt}</div>
+    </div>
+  )
+}
+
+function ElimCard({ id, match, def, localName, visitanteName, localFlag, visitanteFlag, editMode, onSave, isFinal }) {
+  const m  = match || {}
+  const ls = parseInt(m.localScore||0)
+  const vs = parseInt(m.visitanteScore||0)
+  const localWins     = m.status==='done' && (m.penales ? m.penalesGanador===def.local     : ls > vs)
+  const visitanteWins = m.status==='done' && (m.penales ? m.penalesGanador===def.visitante : vs > ls)
+
+  const handleScore = (field, val) => {
+    const updated = { ...m, [field]: val }
+    const status  = (updated.localScore !== '' && updated.visitanteScore !== '') ? 'done' : 'pending'
+    onSave(id, { ...updated, status })
+  }
+
+  return (
+    <div className={`trn-elim-card${isFinal?' is-final':''}`}>
+      {isFinal && <div className="trn-final-accent"/>}
+      <div className="trn-elim-tag">{isFinal ? '🏆 ' : ''}{def.label}</div>
+
+      <div className={`trn-elim-team${localWins?' winner':''}`}>
+        <FlagImg code={localFlag} size={20} />
+        <span className="trn-elim-name">{localName}</span>
+        <div className="trn-elim-score">
+          {editMode
+            ? <input className="trn-score-input sm" value={m.localScore||''} onChange={e=>handleScore('localScore',e.target.value)} maxLength={2} placeholder="-"/>
+            : <div className="trn-score-box sm">{m.localScore||'-'}</div>
+          }
+        </div>
+      </div>
+
+      <div className="trn-elim-vs">VS</div>
+
+      <div className={`trn-elim-team${visitanteWins?' winner':''}`}>
+        <FlagImg code={visitanteFlag} size={20} />
+        <span className="trn-elim-name">{visitanteName}</span>
+        <div className="trn-elim-score">
+          {editMode
+            ? <input className="trn-score-input sm" value={m.visitanteScore||''} onChange={e=>handleScore('visitanteScore',e.target.value)} maxLength={2} placeholder="-"/>
+            : <div className="trn-score-box sm">{m.visitanteScore||'-'}</div>
+          }
+        </div>
+      </div>
+
+      {editMode && (
+        <div className="trn-penales-row">
+          <label className="trn-penales-label">
+            <input type="checkbox" checked={!!m.penales}
+              onChange={e => onSave(id,{...m,penales:e.target.checked,penalesGanador:''})}/>
+            Penales
+          </label>
+          {m.penales && (
+            <div className="trn-penales-winner">
+              <span>Ganador:</span>
+              <button
+                className={`trn-pw-team-btn${m.penalesGanador===def.local?' active':''}`}
+                onClick={() => onSave(id,{...m,penalesGanador:def.local})}>
+                {localName}
+              </button>
+              <button
+                className={`trn-pw-team-btn${m.penalesGanador===def.visitante?' active':''}`}
+                onClick={() => onSave(id,{...m,penalesGanador:def.visitante})}>
+                {visitanteName}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {!editMode && m.penales && m.penalesGanador && (
+        <div className="trn-penales-badge">
+          🥅 Penales — gana {m.penalesGanador===def.local ? localName : visitanteName}
+        </div>
+      )}
+
+      {editMode && (
+        <div className="trn-status-row">
+          {['pending','live','done'].map(s => (
+            <button
+              key={s}
+              className={`trn-status-btn${m.status===s?' active':''}`}
+              onClick={() => onSave(id,{...m,status:s})}
+            >
+              {s==='pending'?'Por jugar':s==='live'?'En vivo':'Finalizado'}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
 // ── Componente principal ─────────────────────────────────────
@@ -120,23 +374,6 @@ export default function Tournament() {
 
   const standings = calcPoints(slots, partidos)
 
-  if (loading) {
-    return (
-      <section className="trn-wrap">
-        <div className="trn-eye">⚽ Torneo SICAR 2026</div>
-        <h2 className="trn-title">Fases del Torneo</h2>
-        <div className="trn-loader-wrap">
-          <div className="trn-loader-ball">⚽</div>
-          <div className="trn-loader-text">Cargando datos del torneo…</div>
-          <div className="trn-loader-dots">
-            <span /><span /><span />
-          </div>
-        </div>
-      </section>
-    )
-  }
-
-  // ── Resolver nombre por slot ───────────────────────────────
   const n = useCallback((slotId) => {
     if (!slotId) return '?'
     if (slots[slotId]?.nombre) return slots[slotId].nombre
@@ -156,7 +393,6 @@ export default function Tournament() {
     return slotId
   }, [slots, partidos, standings])
 
-  // ── Resolver bandera por slot ──────────────────────────────
   const f = useCallback((slotId) => {
     if (!slotId) return ''
     if (slots[slotId]?.bandera) return slots[slotId].bandera
@@ -176,15 +412,14 @@ export default function Tournament() {
     return ''
   }, [slots, partidos, standings])
 
-  // ── Cargar desde Sheets ────────────────────────────────────
   const load = useCallback(async () => {
     if (!SHEET_READY) { setLoading(false); return }
     setLoading(true)
     try {
       const data = await jsonp(`${SHEET_URL}?section=torneo&t=${Date.now()}`)
       if (data?.success) {
-        if (data.slots)    setSlots(prev    => ({ ...prev,    ...data.slots }))
-        if (data.partidos) setPartidos(prev => ({ ...prev,    ...data.partidos }))
+        if (data.slots)    setSlots(prev    => ({ ...prev, ...data.slots }))
+        if (data.partidos) setPartidos(prev => ({ ...prev, ...data.partidos }))
       }
     } catch {}
     setLoading(false)
@@ -192,7 +427,6 @@ export default function Tournament() {
 
   useEffect(() => { load() }, [load])
 
-  // ── Guardar slot ───────────────────────────────────────────
   const saveSlot = async (slot, nombre, bandera) => {
     setSlots(prev => ({ ...prev, [slot]: { nombre, bandera } }))
     if (!SHEET_READY) return
@@ -202,7 +436,6 @@ export default function Tournament() {
     } catch {}
   }
 
-  // ── Guardar partido ────────────────────────────────────────
   const savePartido = async (id, data) => {
     const updated = { ...partidos[id], ...data }
     setPartidos(prev => ({ ...prev, [id]: updated }))
@@ -220,7 +453,6 @@ export default function Tournament() {
     } catch {}
   }
 
-  // ── Password ───────────────────────────────────────────────
   const handlePwSubmit = () => {
     if (pwInput === ADMIN_PASSWORD) {
       setEditMode(true); setPwModal(false); setPwInput(''); setPwError('')
@@ -229,6 +461,24 @@ export default function Tournament() {
     }
   }
 
+  // ── Loader ─────────────────────────────────────────────────
+  if (loading) {
+    return (
+      <section className="trn-wrap">
+        <div className="trn-eye">⚽ Torneo SICAR 2026</div>
+        <h2 className="trn-title">Fases del Torneo</h2>
+        <div className="trn-loader-wrap">
+          <div className="trn-loader-ball">⚽</div>
+          <div className="trn-loader-text">Cargando datos del torneo…</div>
+          <div className="trn-loader-dots">
+            <span /><span /><span />
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  // ── Render principal ────────────────────────────────────────
   return (
     <section className="trn-wrap">
       <div className="trn-eye">⚽ Torneo SICAR 2026</div>
@@ -238,11 +488,9 @@ export default function Tournament() {
       {/* Botón edición */}
       <div style={{ textAlign:'center', marginBottom:20, display:'flex', gap:10, justifyContent:'center' }}>
         {editMode ? (
-          <>
-            <button className="trn-edit-btn active" onClick={() => setEditMode(false)}>
-              ✏️ Salir de edición
-            </button>
-          </>
+          <button className="trn-edit-btn active" onClick={() => setEditMode(false)}>
+            ✏️ Salir de edición
+          </button>
         ) : (
           <button className="trn-edit-btn" onClick={() => setPwModal(true)}>
             🔒 Modo edición
@@ -345,268 +593,5 @@ export default function Tournament() {
         />
       </div>
     </section>
-  )
-}
-
-// ── PhaseLabel ───────────────────────────────────────────────
-function PhaseLabel({ children }) {
-  return (
-    <div className="trn-phase-label">
-      {children}
-      <div className="trn-phase-line" />
-    </div>
-  )
-}
-
-// ── GroupCard ────────────────────────────────────────────────
-function GroupCard({ group, slots, teamSlots, standings, editMode, onSaveSlot }) {
-  const sorted   = group === 'A' ? standings.groupA : standings.groupB
-  const assigned = Object.values(teamSlots).map(s => s.nombre).filter(Boolean)
-
-  return (
-    <div className="trn-group-card">
-      <div className="trn-group-head">
-        <div className="trn-group-badge"
-          style={{ background: group==='A' ? '#0057e7' : '#00a550' }}>
-          {group}
-        </div>
-        <div className="trn-group-name">Grupo {group}</div>
-        <div className="trn-group-headers"><span>PTS</span></div>
-      </div>
-      <div className="trn-group-body">
-        {slots.map((slot, i) => {
-          const current = teamSlots[slot]
-          const pts     = standings.pts[slot] || 0
-          const pos     = sorted.indexOf(slot)
-
-          return (
-            <div key={slot}
-              className={`trn-slot${pos===0?' first':pos===1?' second':''}`}>
-              <span className="trn-slot-pos">{i+1}</span>
-
-              {editMode ? (
-                <div className="trn-slot-selector">
-                  {current?.nombre && (
-                    <button className="trn-clear-btn" onClick={() => onSaveSlot(slot,'','')} title="Quitar">✕</button>
-                  )}
-                  <div className="trn-team-options">
-                    {AVAILABLE_TEAMS.map(t => {
-                      const isSelected = current?.nombre === t.nombre
-                      const isTaken    = assigned.includes(t.nombre) && !isSelected
-                      return (
-                        <button
-                          key={t.id}
-                          className={`trn-team-opt${isSelected?' selected':''}${isTaken?' taken':''}`}
-                          onClick={() => !isTaken && onSaveSlot(slot, t.nombre, t.bandera)}
-                          disabled={isTaken}
-                          title={isTaken ? 'Ya asignado' : t.nombre}
-                        >
-                          <FlagImg code={t.bandera} size={20} />
-                        </button>
-                      )
-                    })}
-                  </div>
-                  <span className="trn-slot-selected-name">
-                    {current?.nombre || <span style={{color:'rgba(255,255,255,.25)'}}>Sin asignar</span>}
-                  </span>
-                </div>
-              ) : (
-                <>
-                  <span className="trn-slot-flag">
-                    <FlagImg code={current?.bandera} size={22} />
-                  </span>
-                  <span className="trn-slot-name">{current?.nombre || slot}</span>
-                </>
-              )}
-
-              <div className="trn-slot-stats"><span>{pts}</span></div>
-            </div>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
-// ── MatchCard ────────────────────────────────────────────────
-function MatchCard({ id, match, def, localName, visitanteName, localFlag, visitanteFlag, editMode, onSave }) {
-  const m = match || {}
-
-  const handleScore = (field, val) => {
-    const updated = { ...m, [field]: val }
-    const status  = (updated.localScore !== '' && updated.visitanteScore !== '') ? 'done' : 'pending'
-    onSave(id, { ...updated, status })
-  }
-
-  const statusMap = {
-    pending: { txt:'Por jugar',   cls:'trn-status-pending' },
-    live:    { txt:'⬤ EN VIVO',   cls:'trn-status-live'    },
-    done:    { txt:'✓ Finalizado',cls:'trn-status-done'    },
-  }
-  const sl = statusMap[m.status || 'pending']
-
-  return (
-    <div className="trn-match-card">
-      <div className="trn-match-label">{def.label}</div>
-      <div className="trn-match-row">
-        <div className="trn-match-team">
-          <FlagImg code={localFlag} size={22} />
-          <span className="trn-match-name">{localName}</span>
-        </div>
-        <div className="trn-match-score">
-          {editMode
-            ? <input className="trn-score-input" value={m.localScore||''} onChange={e=>handleScore('localScore',e.target.value)} maxLength={2} placeholder="-"/>
-            : <div className="trn-score-box">{m.localScore||'-'}</div>
-          }
-          <span className="trn-score-dash">:</span>
-          {editMode
-            ? <input className="trn-score-input" value={m.visitanteScore||''} onChange={e=>handleScore('visitanteScore',e.target.value)} maxLength={2} placeholder="-"/>
-            : <div className="trn-score-box">{m.visitanteScore||'-'}</div>
-          }
-        </div>
-        <div className="trn-match-team right">
-          <span className="trn-match-name">{visitanteName}</span>
-          <FlagImg code={visitanteFlag} size={22} />
-        </div>
-      </div>
-
-      {editMode && (
-        <div className="trn-penales-row">
-          <label className="trn-penales-label">
-            <input type="checkbox" checked={!!m.penales}
-              onChange={e => onSave(id,{...m,penales:e.target.checked,penalesGanador:''})}/>
-            Penales
-          </label>
-          {m.penales && (
-            <div className="trn-penales-winner">
-              <span>Ganador:</span>
-              <button
-                className={`trn-pw-team-btn${m.penalesGanador===def.local?' active':''}`}
-                onClick={() => onSave(id,{...m,penalesGanador:def.local})}>
-                {localName}
-              </button>
-              <button
-                className={`trn-pw-team-btn${m.penalesGanador===def.visitante?' active':''}`}
-                onClick={() => onSave(id,{...m,penalesGanador:def.visitante})}>
-                {visitanteName}
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-
-      {!editMode && m.penales && m.penalesGanador && (
-        <div className="trn-penales-badge">
-          🥅 Penales — gana {m.penalesGanador===def.local ? localName : visitanteName}
-        </div>
-      )}
-
-      {editMode && (
-        <div className="trn-status-row">
-          {['pending','live','done'].map(s => (
-            <button
-              key={s}
-              className={`trn-status-btn${m.status===s?' active':''}`}
-              onClick={() => onSave(id,{...m,status:s})}
-            >
-              {s==='pending'?'Por jugar':s==='live'?'En vivo':'Finalizado'}
-            </button>
-          ))}
-        </div>
-      )}
-
-      <div className={`trn-match-status ${sl.cls}`}>{sl.txt}</div>
-    </div>
-  )
-}
-
-// ── ElimCard ─────────────────────────────────────────────────
-function ElimCard({ id, match, def, localName, visitanteName, localFlag, visitanteFlag, editMode, onSave, isFinal }) {
-  const m  = match || {}
-  const ls = parseInt(m.localScore||0)
-  const vs = parseInt(m.visitanteScore||0)
-  const localWins     = m.status==='done' && (m.penales ? m.penalesGanador===def.local     : ls > vs)
-  const visitanteWins = m.status==='done' && (m.penales ? m.penalesGanador===def.visitante : vs > ls)
-
-  const handleScore = (field, val) => {
-    const updated = { ...m, [field]: val }
-    const status  = (updated.localScore !== '' && updated.visitanteScore !== '') ? 'done' : 'pending'
-    onSave(id, { ...updated, status })
-  }
-
-  return (
-    <div className={`trn-elim-card${isFinal?' is-final':''}`}>
-      {isFinal && <div className="trn-final-accent"/>}
-      <div className="trn-elim-tag">{isFinal ? '🏆 ' : ''}{def.label}</div>
-
-      <div className={`trn-elim-team${localWins?' winner':''}`}>
-        <FlagImg code={localFlag} size={20} />
-        <span className="trn-elim-name">{localName}</span>
-        <div className="trn-elim-score">
-          {editMode
-            ? <input className="trn-score-input sm" value={m.localScore||''} onChange={e=>handleScore('localScore',e.target.value)} maxLength={2} placeholder="-"/>
-            : <div className="trn-score-box sm">{m.localScore||'-'}</div>
-          }
-        </div>
-      </div>
-
-      <div className="trn-elim-vs">VS</div>
-
-      <div className={`trn-elim-team${visitanteWins?' winner':''}`}>
-        <FlagImg code={visitanteFlag} size={20} />
-        <span className="trn-elim-name">{visitanteName}</span>
-        <div className="trn-elim-score">
-          {editMode
-            ? <input className="trn-score-input sm" value={m.visitanteScore||''} onChange={e=>handleScore('visitanteScore',e.target.value)} maxLength={2} placeholder="-"/>
-            : <div className="trn-score-box sm">{m.visitanteScore||'-'}</div>
-          }
-        </div>
-      </div>
-
-      {editMode && (
-        <div className="trn-penales-row">
-          <label className="trn-penales-label">
-            <input type="checkbox" checked={!!m.penales}
-              onChange={e => onSave(id,{...m,penales:e.target.checked,penalesGanador:''})}/>
-            Penales
-          </label>
-          {m.penales && (
-            <div className="trn-penales-winner">
-              <span>Ganador:</span>
-              <button
-                className={`trn-pw-team-btn${m.penalesGanador===def.local?' active':''}`}
-                onClick={() => onSave(id,{...m,penalesGanador:def.local})}>
-                {localName}
-              </button>
-              <button
-                className={`trn-pw-team-btn${m.penalesGanador===def.visitante?' active':''}`}
-                onClick={() => onSave(id,{...m,penalesGanador:def.visitante})}>
-                {visitanteName}
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-
-      {!editMode && m.penales && m.penalesGanador && (
-        <div className="trn-penales-badge">
-          🥅 Penales — gana {m.penalesGanador===def.local ? localName : visitanteName}
-        </div>
-      )}
-
-      {editMode && (
-        <div className="trn-status-row">
-          {['pending','live','done'].map(s => (
-            <button
-              key={s}
-              className={`trn-status-btn${m.status===s?' active':''}`}
-              onClick={() => onSave(id,{...m,status:s})}
-            >
-              {s==='pending'?'Por jugar':s==='live'?'En vivo':'Finalizado'}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
   )
 }
