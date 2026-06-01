@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 
-const ADMIN_PASSWORD = 'sicar2026'
+const ADMIN_PASSWORD = 's26+'
 
 const AVAILABLE_TEAMS = [
   { id:'mx', nombre:'México',     bandera:'mx' },
