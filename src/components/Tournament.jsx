@@ -120,6 +120,22 @@ export default function Tournament() {
 
   const standings = calcPoints(slots, partidos)
 
+  if (loading) {
+    return (
+      <section className="trn-wrap">
+        <div className="trn-eye">⚽ Torneo SICAR 2026</div>
+        <h2 className="trn-title">Fases del Torneo</h2>
+        <div className="trn-loader-wrap">
+          <div className="trn-loader-ball">⚽</div>
+          <div className="trn-loader-text">Cargando datos del torneo…</div>
+          <div className="trn-loader-dots">
+            <span /><span /><span />
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   // ── Resolver nombre por slot ───────────────────────────────
   const n = useCallback((slotId) => {
     if (!slotId) return '?'

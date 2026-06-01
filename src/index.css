@@ -1445,3 +1445,55 @@ body {
 }
 
 .trn-clear-btn:hover { background: rgba(229,57,53,.45); }
+
+
+/* ── TOURNAMENT LOADER ── */
+.trn-loader-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 16px;
+}
+
+.trn-loader-ball {
+  font-size: 48px;
+  animation: loaderSpin 1s linear infinite;
+  filter: drop-shadow(0 0 12px rgba(0,200,83,.4));
+}
+
+@keyframes loaderSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.trn-loader-text {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,.5);
+  text-transform: uppercase;
+}
+
+.trn-loader-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.trn-loader-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00c853;
+  animation: dotBounce .8s ease-in-out infinite;
+}
+
+.trn-loader-dots span:nth-child(2) { animation-delay: .15s; }
+.trn-loader-dots span:nth-child(3) { animation-delay: .3s;  }
+
+@keyframes dotBounce {
+  0%,100% { transform: translateY(0);    opacity: .4; }
+  50%     { transform: translateY(-8px); opacity: 1;  }
+}
