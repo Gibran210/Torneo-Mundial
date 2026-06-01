@@ -1279,7 +1279,7 @@ body {
 
 /* GRUPOS */
 .trn-groups { display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px; }
-.trn-group-card { background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;overflow:hidden; }
+.trn-group-card { background: rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);border-radius:14px;overflow:hidden; }
 .trn-group-head { padding:12px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.08); }
 .trn-group-badge{ width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:17px;color:#fff;flex-shrink:0; }
 .trn-group-name { font-family:'Bebas Neue',sans-serif;font-size:17px;color:#fff;letter-spacing:1px;flex:1; }
@@ -1300,7 +1300,7 @@ body {
 
 /* PARTIDOS */
 .trn-matches { display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px; }
-.trn-match-card { background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px;text-align:center; }
+.trn-match-card { background: rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px;text-align:center; }
 .trn-match-label{ font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,.35);text-transform:uppercase;margin-bottom:8px; }
 .trn-match-row  { display:flex;align-items:center;justify-content:space-between;gap:4px; }
 .trn-match-team { display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;min-width:0; }
@@ -1333,8 +1333,8 @@ body {
 .trn-final { display:flex;justify-content:center; }
 .trn-final .trn-elim-card { width:min(360px,100%); }
 
-.trn-elim-card { background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);border-radius:14px;padding:14px;position:relative;overflow:hidden; }
-.trn-elim-card.is-final { border-color:rgba(240,193,75,.3);background:rgba(240,193,75,.04); }
+.trn-elim-card { background: rgba(0,0,0,.35);border:1.5px solid rgba(255,255,255,.1);border-radius:14px;padding:14px;position:relative;overflow:hidden; }
+.trn-elim-card.is-final { border-color:rgba(240,193,75,.3); background: rgba(0,0,0,.4); }
 .trn-final-accent { position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f0c14b,#fff,#f0c14b);background-size:200%;animation:accentFlow 2s linear infinite; }
 .trn-elim-tag  { font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.35);text-transform:uppercase;margin-bottom:10px; }
 .trn-elim-team { display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);margin-bottom:6px;transition:all .2s; }
