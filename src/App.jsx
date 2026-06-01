@@ -13,6 +13,8 @@ import { useToast }     from './components/Toast'
 import Confetti         from './components/Confetti'
 import { useSheets }    from './hooks/useSheets'
 import { SHEET_READY, REGISTRATION_OPEN } from './constants'
+import Tournament from './components/Tournament'
+
 
 export default function App() {
   const { players, loadStatus, saveStatus, isEmailTaken, savePlayer, refresh } = useSheets()
@@ -46,6 +48,8 @@ export default function App() {
 
   {/* / — Equipos (página principal) */}
   <Route path="/" element={<Teams />} />
+
+  <Route path="/fases" element={<Tournament />} />
 
   {/* /inscripcion — Formulario */}
   <Route path="/inscripcion" element={
