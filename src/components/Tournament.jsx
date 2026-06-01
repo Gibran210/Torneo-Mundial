@@ -334,18 +334,18 @@ export default function Tournament() {
 
   // ── Cargar desde Sheets ──────────────────────────────────
   const load = useCallback(async () => {
-    if (!SHEET_READY) { setLoading(false); return }
-    setLoading(true)
-    try {
-      const data = await jsonp(`${SHEET_URL}?section=torneo&t=${Date.now()}`)
-      if (data?.success) {
-        if (data.slots)    setSlots(prev    => ({ ...prev, ...data.slots }))
-        if (data.partidos) setPartidos(prev => ({ ...prev, ...data.partidos }))
-      }
-    } catch {}
-    setLoading(false)
-    setHasChanges(false)
-  }, [])
+  setLoading(true)
+  try {
+    const res  = await fetch(`/api/sheets?section=torneo&t=${Date.now()}`)
+    const data = await res.json()
+    if (data?.success) {
+      if (data.slots)    setSlots(prev    => ({ ...prev, ...data.slots }))
+      if (data.partidos) setPartidos(prev => ({ ...prev, ...data.partidos }))
+    }
+  } catch {}
+  setLoading(false)
+  setHasChanges(false)
+}, [])
 
   useEffect(() => { load() }, [load])
 
@@ -363,44 +363,44 @@ export default function Tournament() {
   }
 
 const saveAll = async () => {
-  if (!SHEET_READY) { setSaveStatus('ok'); setHasChanges(false); return }
   setSaving(true)
   setSaveStatus('')
 
   const delay = ms => new Promise(res => setTimeout(res, ms))
 
+  const callApi = async (params) => {
+    const res  = await fetch(`/api/sheets?${params}`)
+    const data = await res.json()
+    if (!data?.success) throw new Error(data?.error || 'Error')
+    return data
+  }
+
   try {
-    // Guardar solo los slots que tienen nombre asignado
     for (const [slot, val] of Object.entries(slots)) {
-      if (!val.nombre && !val.bandera) continue // ← salta slots vacíos
-      const params = new URLSearchParams({
+      if (!val.nombre && !val.bandera) continue
+      await callApi(new URLSearchParams({
         method:'torneo', action:'updateSlot',
         slot, nombre: val.nombre||'', bandera: val.bandera||''
-      })
-      const url = `${SHEET_URL}?${params}`
-  console.log('Llamando:', url)
-      await jsonp(`${SHEET_URL}?${params}`)
-      await delay(400) // ← pausa entre peticiones
+      }))
+      await delay(300)
     }
 
-    // Guardar partidos
     for (const [id, m] of Object.entries(partidos)) {
-      const params = new URLSearchParams({
+      await callApi(new URLSearchParams({
         method:'torneo', action:'updatePartido', id,
         localScore:     m.localScore     || '',
         visitanteScore: m.visitanteScore || '',
         penales:        m.penales        ? 'true' : 'false',
         penalesGanador: m.penalesGanador || '',
         status:         m.status         || 'pending',
-      })
-      await jsonp(`${SHEET_URL}?${params}`)
-      await delay(400) // ← pausa entre peticiones
+      }))
+      await delay(300)
     }
 
     setSaveStatus('ok')
     setHasChanges(false)
   } catch (err) {
-    console.error('Error al guardar:', err)
+    console.error('Error:', err)
     setSaveStatus('error')
   }
 
