@@ -362,44 +362,42 @@ export default function Tournament() {
     setSaveStatus('')
   }
 
-  // ── Guardar TODO en Sheets de una vez ────────────────────
-  const saveAll = async () => {
-    if (!SHEET_READY) { setSaveStatus('ok'); setHasChanges(false); return }
-    setSaving(true)
-    setSaveStatus('')
-    try {
-      // Guardar todos los slots
-      const slotPromises = Object.entries(slots).map(([slot, val]) => {
-        const params = new URLSearchParams({
-          method:'torneo', action:'updateSlot',
-          slot, nombre: val.nombre||'', bandera: val.bandera||''
-        })
-        return jsonp(`${SHEET_URL}?${params}`)
+const saveAll = async () => {
+  if (!SHEET_READY) { setSaveStatus('ok'); setHasChanges(false); return }
+  setSaving(true)
+  setSaveStatus('')
+  try {
+    // Guardar slots uno por uno
+    for (const [slot, val] of Object.entries(slots)) {
+      const params = new URLSearchParams({
+        method:'torneo', action:'updateSlot',
+        slot, nombre: val.nombre||'', bandera: val.bandera||''
       })
-
-      // Guardar todos los partidos
-      const partidoPromises = Object.entries(partidos).map(([id, m]) => {
-        const params = new URLSearchParams({
-          method:'torneo', action:'updatePartido', id,
-          localScore:     m.localScore     || '',
-          visitanteScore: m.visitanteScore || '',
-          penales:        m.penales        ? 'true' : 'false',
-          penalesGanador: m.penalesGanador || '',
-          status:         m.status         || 'pending',
-        })
-        return jsonp(`${SHEET_URL}?${params}`)
-      })
-
-      await Promise.all([...slotPromises, ...partidoPromises])
-      setSaveStatus('ok')
-      setHasChanges(false)
-    } catch {
-      setSaveStatus('error')
+      await jsonp(`${SHEET_URL}?${params}`)
     }
-    setSaving(false)
-    // Limpiar el status después de 3 segundos
-    setTimeout(() => setSaveStatus(''), 3000)
+
+    // Guardar partidos uno por uno
+    for (const [id, m] of Object.entries(partidos)) {
+      const params = new URLSearchParams({
+        method:'torneo', action:'updatePartido', id,
+        localScore:     m.localScore     || '',
+        visitanteScore: m.visitanteScore || '',
+        penales:        m.penales        ? 'true' : 'false',
+        penalesGanador: m.penalesGanador || '',
+        status:         m.status         || 'pending',
+      })
+      await jsonp(`${SHEET_URL}?${params}`)
+    }
+
+    setSaveStatus('ok')
+    setHasChanges(false)
+  } catch (err) {
+    console.error('Error al guardar:', err)
+    setSaveStatus('error')
   }
+  setSaving(false)
+  setTimeout(() => setSaveStatus(''), 3000)
+}
 
   // ── Password ─────────────────────────────────────────────
   const handlePwSubmit = () => {
