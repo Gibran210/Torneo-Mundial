@@ -377,6 +377,8 @@ const saveAll = async () => {
         method:'torneo', action:'updateSlot',
         slot, nombre: val.nombre||'', bandera: val.bandera||''
       })
+      const url = `${SHEET_URL}?${params}`
+  console.log('Llamando:', url)
       await jsonp(`${SHEET_URL}?${params}`)
       await delay(400) // ← pausa entre peticiones
     }
