@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { SHEET_URL, SHEET_READY } from '../constants'
 
 const ADMIN_PASSWORD = 'sicar2026'
+const [pendingSlots,    setPendingSlots]    = useState({})
+const [pendingPartidos, setPendingPartidos] = useState({})
 
 const AVAILABLE_TEAMS = [
   { id:'mx', nombre:'México',     bandera:'mx' },
@@ -351,16 +353,18 @@ export default function Tournament() {
 
   // ── Cambios locales (sin guardar aún) ────────────────────
   const handleChangeSlot = (slot, nombre, bandera) => {
-    setSlots(prev => ({ ...prev, [slot]: { nombre, bandera } }))
-    setHasChanges(true)
-    setSaveStatus('')
-  }
+  setSlots(prev => ({ ...prev, [slot]: { nombre, bandera } }))
+  setPendingSlots(prev => ({ ...prev, [slot]: { nombre, bandera } }))
+  setHasChanges(true)
+  setSaveStatus('')
+}
 
   const handleChangePartido = (id, data) => {
-    setPartidos(prev => ({ ...prev, [id]: { ...prev[id], ...data } }))
-    setHasChanges(true)
-    setSaveStatus('')
-  }
+  setPartidos(prev => ({ ...prev, [id]: { ...prev[id], ...data } }))
+  setPendingPartidos(prev => ({ ...prev, [id]: { ...prev[id], ...data } }))
+  setHasChanges(true)
+  setSaveStatus('')
+}
 
 const saveAll = async () => {
   setSaving(true)
@@ -376,8 +380,8 @@ const saveAll = async () => {
   }
 
   try {
-    for (const [slot, val] of Object.entries(slots)) {
-      if (!val.nombre && !val.bandera) continue
+    // Solo guardar slots modificados
+    for (const [slot, val] of Object.entries(pendingSlots)) {
       await callApi(new URLSearchParams({
         method:'torneo', action:'updateSlot',
         slot, nombre: val.nombre||'', bandera: val.bandera||''
@@ -385,7 +389,8 @@ const saveAll = async () => {
       await delay(300)
     }
 
-    for (const [id, m] of Object.entries(partidos)) {
+    // Solo guardar partidos modificados
+    for (const [id, m] of Object.entries(pendingPartidos)) {
       await callApi(new URLSearchParams({
         method:'torneo', action:'updatePartido', id,
         localScore:     m.localScore     || '',
@@ -397,6 +402,9 @@ const saveAll = async () => {
       await delay(300)
     }
 
+    // Limpiar pendientes tras guardar exitosamente
+    setPendingSlots({})
+    setPendingPartidos({})
     setSaveStatus('ok')
     setHasChanges(false)
   } catch (err) {
@@ -444,20 +452,22 @@ const saveAll = async () => {
           <>
             {/* Guardar */}
             <button
-              className={`trn-save-btn${saving?' saving':''}`}
-              onClick={saveAll}
-              disabled={saving || !hasChanges}
-            >
-              {saving ? (
-                <><span className="trn-save-spinner"/>Guardando…</>
-              ) : saveStatus==='ok' ? (
-                <>✅ Guardado</>
-              ) : saveStatus==='error' ? (
-                <>❌ Error al guardar</>
-              ) : (
-                <>{hasChanges ? '💾 Guardar cambios' : '💾 Sin cambios'}</>
-              )}
-            </button>
+  className={`trn-save-btn${saving?' saving':''}`}
+  onClick={saveAll}
+  disabled={saving || !hasChanges}
+>
+  {saving ? (
+    <><span className="trn-save-spinner"/>Guardando…</>
+  ) : saveStatus==='ok' ? (
+    <>✅ Guardado</>
+  ) : saveStatus==='error' ? (
+    <>❌ Error al guardar</>
+  ) : hasChanges ? (
+    <>💾 Guardar ({Object.keys(pendingSlots).length + Object.keys(pendingPartidos).length} cambios)</>
+  ) : (
+    <>💾 Sin cambios</>
+  )}
+</button>
 
             {/* Salir */}
             <button className="trn-edit-btn active" onClick={() => {
