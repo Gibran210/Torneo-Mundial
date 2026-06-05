@@ -52,11 +52,14 @@ function calcPoints(partidos) {
   const pts = { A1:0, A2:0, A3:0, B1:0, B2:0, B3:0 }
   const gf  = { A1:0, A2:0, A3:0, B1:0, B2:0, B3:0 }
   const gc  = { A1:0, A2:0, A3:0, B1:0, B2:0, B3:0 }
+  const pj  = { A1:0, A2:0, A3:0, B1:0, B2:0, B3:0 }  // ← nuevo
+
   ;['GA1','GA2','GA3','GB1','GB2','GB3'].forEach(id => {
     const m = partidos[id], d = MATCH_DEFS[id]
     if (!m || m.status === 'pending') return
     const ls = parseInt(m.localScore)||0, vs = parseInt(m.visitanteScore)||0
     const L = d.local, V = d.visitante
+    pj[L]=(pj[L]||0)+1; pj[V]=(pj[V]||0)+1    // ← contar partidos jugados
     gf[L]=(gf[L]||0)+ls; gc[L]=(gc[L]||0)+vs
     gf[V]=(gf[V]||0)+vs; gc[V]=(gc[V]||0)+ls
     if (m.penales) {
@@ -68,11 +71,19 @@ function calcPoints(partidos) {
       else { pts[L]+=1; pts[V]+=1 }
     }
   })
+
   const sortGroup = keys => [...keys].sort((a,b) => {
     if (pts[b]!==pts[a]) return pts[b]-pts[a]
-    return (gf[b]-gc[b])-(gf[a]-gc[a])
+    const difA=gf[a]-gc[a], difB=gf[b]-gc[b]
+    if (difB!==difA) return difB-difA
+    return gf[b]-gf[a]
   })
-  return { pts, groupA: sortGroup(['A1','A2','A3']), groupB: sortGroup(['B1','B2','B3']) }
+
+  return {
+    pts, gf, gc, pj,   // ← agrega pj
+    groupA: sortGroup(['A1','A2','A3']),
+    groupB: sortGroup(['B1','B2','B3'])
+  }
 }
 
 function semiWinner(semiId, partidos) {
@@ -101,10 +112,16 @@ function GroupCard({ group, slots, teamSlots, standings, editMode, onChangeSlot 
       <div className="trn-group-head">
         <div className="trn-group-badge" style={{ background: group==='A'?'#0057e7':'#00a550' }}>{group}</div>
         <div className="trn-group-name">Grupo {group}</div>
-        <div className="trn-group-headers"><span>PTS</span></div>
+        <div className="trn-group-headers">
+  <span>PJ</span>
+  <span>GF</span>
+  <span>GC</span>
+  <span>DG</span>
+  <span>PTS</span>
+</div>
       </div>
       <div className="trn-group-body">
-        {slots.map((slot, i) => {
+        {sorted.map((slot, i) => {
           const current = teamSlots[slot]
           const pts     = standings.pts[slot] || 0
           const pos     = sorted.indexOf(slot)
@@ -140,7 +157,16 @@ function GroupCard({ group, slots, teamSlots, standings, editMode, onChangeSlot 
                   <span className="trn-slot-name">{current?.nombre || slot}</span>
                 </>
               )}
-              <div className="trn-slot-stats"><span>{pts}</span></div>
+              <div className="trn-slot-stats">
+  <span>{standings.pj?.[slot] || 0}</span>
+  <span>{standings.gf?.[slot] || 0}</span>
+  <span>{standings.gc?.[slot] || 0}</span>
+  <span style={{ color: (standings.gf?.[slot]||0)-(standings.gc?.[slot]||0) >= 0 ? '#00e676' : '#ff6b6b' }}>
+    {((standings.gf?.[slot]||0)-(standings.gc?.[slot]||0)) > 0 ? '+' : ''}
+    {(standings.gf?.[slot]||0)-(standings.gc?.[slot]||0)}
+  </span>
+  <span>{standings.pts[slot] || 0}</span>
+</div>
             </div>
           )
         })}

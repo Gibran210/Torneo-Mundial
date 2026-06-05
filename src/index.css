@@ -1283,8 +1283,19 @@ body {
 .trn-group-head { padding:12px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.08); }
 .trn-group-badge{ width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:17px;color:#fff;flex-shrink:0; }
 .trn-group-name { font-family:'Bebas Neue',sans-serif;font-size:17px;color:#fff;letter-spacing:1px;flex:1; }
-.trn-group-headers { display:flex;gap:8px;font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:1px; }
-.trn-group-headers span { width:24px;text-align:center; }
+.trn-group-headers {
+  display: flex;
+  gap: 6px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,.3);
+  letter-spacing: 1px;
+}
+.trn-group-headers span {
+  width: 22px;
+  text-align: center;
+}
 .trn-group-body { padding:8px; }
 .trn-slot { display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;margin-bottom:4px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);transition:background .2s; }
 .trn-slot:last-child { margin-bottom:0; }
@@ -1293,7 +1304,22 @@ body {
 .trn-slot-pos  { font-family:'Bebas Neue',sans-serif;font-size:14px;color:rgba(255,255,255,.25);width:14px;text-align:center; }
 .trn-slot-flag { font-size:18px;width:24px;text-align:center; }
 .trn-slot-name { font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:rgba(255,255,255,.8);flex:1; }
-.trn-slot-stats{ display:flex;gap:8px;font-family:'Bebas Neue',sans-serif;font-size:15px;color:#00e676; }
+.trn-slot-stats {
+  display: flex;
+  gap: 6px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+}
+.trn-slot-stats span {
+  width: 22px;
+  text-align: center;
+  color: rgba(255,255,255,.6);
+}
+
+.trn-slot-stats span:last-child {
+  color: #00e676;
+  font-size: 15px;
+}
 .trn-slot-edit { display:flex;gap:6px;flex:1;align-items:center; }
 .trn-slot-input{ background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:7px;padding:4px 8px;color:#fff;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;outline:none;flex:1; }
 .trn-slot-input.flag-input { width:46px;flex:none;text-align:center;font-size:16px;padding:3px 4px; }
